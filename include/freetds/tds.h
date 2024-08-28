@@ -1725,6 +1725,7 @@ struct tds_bcpinfo
 	TDS_INT text_sent;
 	TDS_INT next_col;
 	TDS_INT blob_cols;
+	bool with_triggers;
 };
 
 TDSRET tds_bcp_init(TDSSOCKET *tds, TDSBCPINFO *bcpinfo);
