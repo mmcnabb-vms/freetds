@@ -110,6 +110,8 @@ TEST_MAIN()
 
 	/* test C types */
 	for (p = types; p->name; ++p) {
+        if ( !(p->flags & FLAG_C) )
+            continue;
 		if (SQL_SUCCEEDED
 		    (SQLBindParameter(odbc_stmt, 1, SQL_PARAM_INPUT, p->type, SQL_VARCHAR, (SQLUINTEGER) (-1), 0, buf, 16, &lind))) {
 			SQLSMALLINT concise_type, type, code;
@@ -157,6 +159,8 @@ TEST_MAIN()
 	/* test SQL types */
 	SQLGetStmtAttr(odbc_stmt, SQL_ATTR_IMP_PARAM_DESC, &desc, sizeof(desc), &ind);
 	for (p = types; p->name; ++p) {
+        if ( !(p->flags & FLAG_SQL) )
+            continue;
 		SQLSMALLINT concise_type = p->type;
 
 		if (SQL_SUCCEEDED
