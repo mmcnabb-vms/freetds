@@ -9,7 +9,7 @@ Other prerequisites:
 
     gunzip
     vmstar
-    MMS or MMK
+    MMK
 
 Build Instructions
 
@@ -24,8 +24,7 @@ run the configuration script like so:
     $ @[.vms]configure
 
 This creates a descrip.mms in the top-level source directory which you may
-execute by simply running MMS (if you have the Module Management System that
-is part of DECset) or MMK (a freeware MMS alternative available from
+execute by simply running MMK (a freeware MMS alternative available from
 https://github.com/endlesssoftware/mmk).  You may change some default behaviors
 by sypplying one or more of the following macros to the make utility:
 
@@ -72,7 +71,7 @@ directory.
 
 Examples:
 
-    $ MMS/MACRO="ODBC"=1
+    $ MMK/MACRO="ODBC"=1
     $ MMK/MACRO=("ODBC"=1,"TDSVER"="TDS71")
 
 __DEBUG__
