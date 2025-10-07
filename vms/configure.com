@@ -71,8 +71,16 @@ $   d_openssl = "1"
 $   d_rsa_get0_key = "1"
 $   SAY "Found OpenSSL 3.x and creating linker options file..."
 $   OPEN/WRITE sslopt openssl.opt
-$   WRITE sslopt "SYS$SHARE:SSL3$LIBSSL_SHR32.EXE/SHARE"
-$   WRITE sslopt "SYS$SHARE:SSL3$LIBCRYPTO_SHR32.EXE/SHARE"
+$   IF F$TRNLNM("FREETDS_BUILD_SSL_STATIC") .NE. 0
+$   THEN
+$     SAY "OpenSSL static linking."
+$     WRITE sslopt "SSL3$LIB:SSL3$LIBSSL32.OLB/LIB"
+$     WRITE sslopt "SSL3$LIB:SSL3$LIBCRYPTO32.OLB/LIB"
+$   ELSE
+$     SAY "OpenSSL linking to shared image."
+$     WRITE sslopt "SYS$SHARE:SSL3$LIBSSL_SHR32.EXE/SHARE"
+$     WRITE sslopt "SYS$SHARE:SSL3$LIBCRYPTO_SHR32.EXE/SHARE"
+$   ENDIF
 $   CLOSE sslopt
 $ ELSE
 $   IF F$SEARCH("SSL111$INCLUDE:SSL.H") .NES. ""
