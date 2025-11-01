@@ -312,7 +312,6 @@ TEST_MAIN()
 		}
 	}
 
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	odbc_command("IF OBJECT_ID('tab1') IS NOT NULL DROP TABLE tab1");

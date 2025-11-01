@@ -6,6 +6,7 @@ TEST_MAIN()
 	SQLLEN ind1, ind2;
 	char name[64];
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command("CREATE TABLE #test(id INT, name VARCHAR(100))");

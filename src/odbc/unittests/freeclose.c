@@ -259,6 +259,7 @@ TEST_MAIN()
 
 	odbc_mark_sockets_opened();
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	/*

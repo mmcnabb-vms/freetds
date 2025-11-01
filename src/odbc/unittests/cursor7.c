@@ -78,7 +78,6 @@ Init(void)
 
 TEST_MAIN()
 {
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	odbc_check_cursor();

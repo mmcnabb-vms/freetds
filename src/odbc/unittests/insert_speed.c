@@ -39,6 +39,7 @@ insert_test(bool manual)
 
 TEST_MAIN()
 {
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command_with_result(odbc_stmt, "DROP TABLE test");

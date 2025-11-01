@@ -407,7 +407,6 @@ TEST_MAIN()
 	odbc_read_login_info();
 	setup_override();
 
-	odbc_use_version3 = true;
 	sprintf(connect, "SERVER=127.0.0.1,%d;TDS_Version=7.3;Encrypt=No;", port);
 	odbc_conn_additional_params = connect;
 	odbc_connect();

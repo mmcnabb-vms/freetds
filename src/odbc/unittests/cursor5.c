@@ -26,7 +26,6 @@ doFetch(int dir, int pos, int expected)
 
 TEST_MAIN()
 {
-	odbc_use_version3 = true;
 	odbc_connect();
 	odbc_check_cursor();
 

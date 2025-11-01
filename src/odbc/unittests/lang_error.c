@@ -4,6 +4,7 @@
 
 TEST_MAIN()
 {
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	/* issue print statement and test message returned */

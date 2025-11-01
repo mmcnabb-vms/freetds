@@ -10,6 +10,7 @@ TEST_MAIN()
 	const char *command;
 	SQLCHAR output[256];
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command("if object_id('tempdb..#odbctestdata') is not null drop table #odbctestdata");

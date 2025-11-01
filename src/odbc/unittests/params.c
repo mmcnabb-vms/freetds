@@ -77,6 +77,8 @@ Test(int bind_before)
 
 TEST_MAIN()
 {
+	odbc_use_version3 = false;
+
 	if (Test(0))
 		return 1;
 	if (Test(1))

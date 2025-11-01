@@ -7,6 +7,7 @@ TEST_MAIN()
 	SQLRETURN RetCode;
 	HSTMT stmt;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	/* create a test table */

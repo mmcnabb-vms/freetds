@@ -210,6 +210,7 @@ TEST_MAIN()
 	strcat(drop_proc, proc_name);
 	
 	printf("connecting\n");
+	odbc_use_version3 = false;
 	odbc_connect();
 	
 	init_proc(proc_name);

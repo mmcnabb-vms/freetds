@@ -9,6 +9,7 @@ TEST_MAIN()
 	SQLLEN ind, ind2, ind3;
 	const char *sql;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	if (odbc_command_with_result(odbc_stmt, "drop proc const_param") != SQL_SUCCESS)

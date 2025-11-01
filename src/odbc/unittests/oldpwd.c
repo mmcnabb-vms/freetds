@@ -35,8 +35,6 @@ TEST_MAIN()
 	const char *ci;
 	SQLRETURN rc;
 
-	odbc_use_version3 = true;
-
 	/*
 	 * Check if we are in CI.
 	 * This test is doing some administration setting on the server, avoid

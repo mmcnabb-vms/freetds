@@ -9,6 +9,7 @@ TEST_MAIN()
 	SQLTCHAR msg[256];
 	SQLTCHAR sqlstate[6];
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command("CREATE TABLE #urls ( recdate DATETIME ) ");

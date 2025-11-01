@@ -43,7 +43,6 @@ TEST_MAIN()
 	SQLINTEGER bind1;
 	char bind2[20] = "parameters";
 
-	odbc_use_version3 = true;
 	odbc_set_conn_attr = my_attrs;
 	odbc_connect();
 

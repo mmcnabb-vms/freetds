@@ -65,6 +65,7 @@ Test(int prebind)
 
 TEST_MAIN()
 {
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command("CREATE TABLE #tmp1 (c VARCHAR(200))");

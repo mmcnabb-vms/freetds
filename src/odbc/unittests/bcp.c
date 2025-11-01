@@ -263,6 +263,7 @@ TEST_MAIN()
 {
 	const char *s;
 
+	odbc_use_version3 = false;
 	odbc_set_conn_attr = set_attr;
 	odbc_conn_additional_params = "ClientCharset=ISO-8859-1;";
 	odbc_connect();

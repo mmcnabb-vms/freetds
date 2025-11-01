@@ -7,6 +7,7 @@ TEST_MAIN()
 	char output[256];
 	SQLLEN dataSize;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command_with_result(odbc_stmt, "drop proc sp_norowset_test");

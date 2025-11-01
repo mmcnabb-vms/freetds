@@ -262,7 +262,6 @@ TEST_MAIN()
 		return 0;
 	}
 
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	odbc_command("create table #tmp1 (i int)");

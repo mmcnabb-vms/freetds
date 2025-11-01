@@ -92,6 +92,8 @@ Test(int direct, int long_query)
 
 TEST_MAIN()
 {
+	odbc_use_version3 = false;
+
 	/* check with short queries */
 	if (Test(0, 0) || Test(1, 0))
 		return 1;

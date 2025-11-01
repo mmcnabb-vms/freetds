@@ -32,7 +32,6 @@ Test(bool direct)
 
 TEST_MAIN()
 {
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	Test(false);

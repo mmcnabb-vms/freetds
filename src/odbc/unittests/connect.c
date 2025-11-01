@@ -19,6 +19,8 @@ TEST_MAIN()
 	bool is_ms;
 	SQLRETURN rc;
 
+	odbc_use_version3 = false;
+
 	/* NOTE: In Windows, this function will copy the data from PWD into
 	 * a registry entry HKCU\Software\ODBC\ODBC.INI\{servername}
 	 */

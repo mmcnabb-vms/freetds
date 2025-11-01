@@ -101,6 +101,7 @@ TEST_MAIN()
 	int i = 0;
 	int exit_status;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 	while ((exit_status = DoTest(i++)) == -1)
 		continue;

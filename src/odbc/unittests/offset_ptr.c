@@ -157,7 +157,6 @@ test_fetch(FetchType fetch_type)
 
 TEST_MAIN()
 {
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	odbc_command("CREATE TABLE #offset_ptr (id1 INT, ch1 VARCHAR(10) NULL)");

@@ -263,6 +263,7 @@ TEST_MAIN()
 	SQLLEN len;
 	get_attr_t get_attr_p = get_attr_stmt;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 	/* TODO find another way */
 	odbc_check_cursor();

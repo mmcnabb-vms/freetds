@@ -72,6 +72,7 @@ CheckFetch(const char *c1name, const char *c1, const char *c2)
 
 TEST_MAIN()
 {
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	/* MSSQL 2012+, compute not supported */

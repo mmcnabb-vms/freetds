@@ -37,8 +37,6 @@ TEST_MAIN()
 	};
 	const int num_tests = TDS_VECTOR_SIZE(tests);
 
-	odbc_use_version3 = true;
-
 	odbc_connect();
 	odbc_check_cursor();
 

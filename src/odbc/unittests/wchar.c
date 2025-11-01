@@ -8,7 +8,6 @@ TEST_MAIN()
 	SQLLEN ind;
 	bool failed = false;
 
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	CHKBindCol(1, SQL_C_DEFAULT, buf, 100, &ind, "S");

@@ -23,6 +23,7 @@ TEST_MAIN()
 	SQLSMALLINT len, type;
 	SQLTCHAR name[128];
 
+	odbc_use_version3 = false;
 	odbc_connect();
 	odbc_command("create table #dc (col_name int, name2 varchar(100))");
 

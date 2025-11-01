@@ -100,6 +100,7 @@ TEST_MAIN()
 	SQLLEN lind;
 	SQLHDESC desc;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	/*

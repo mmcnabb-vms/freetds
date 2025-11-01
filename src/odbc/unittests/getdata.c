@@ -151,6 +151,7 @@ TEST_MAIN()
 	SQLRETURN rc;
 	TIMESTAMP_STRUCT tss;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	type = SQL_C_CHAR;

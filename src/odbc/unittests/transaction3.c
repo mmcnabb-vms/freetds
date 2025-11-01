@@ -4,7 +4,6 @@
 
 TEST_MAIN()
 {
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	CHKEndTran(SQL_HANDLE_DBC, odbc_conn, SQL_COMMIT, "S");

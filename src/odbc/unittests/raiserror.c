@@ -276,6 +276,8 @@ Test2(int nocount, int second_select)
 
 TEST_MAIN()
 {
+	odbc_use_version3 = false;
+
 	odbc_connect();
 
 	Test2(0, 1);

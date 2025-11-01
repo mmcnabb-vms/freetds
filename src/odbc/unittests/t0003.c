@@ -49,6 +49,7 @@ DoTest(int prepared)
 
 TEST_MAIN()
 {
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	DoTest(0);

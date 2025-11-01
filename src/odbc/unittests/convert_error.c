@@ -32,7 +32,6 @@ Test(const char *bind1, SQLSMALLINT type1, const char *bind2, SQLSMALLINT type2)
 
 TEST_MAIN()
 {
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	odbc_command("create table #test_output (id int, msg text)");

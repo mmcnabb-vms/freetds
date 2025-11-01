@@ -108,6 +108,7 @@ TEST_MAIN()
 	/* do not allocate so big memory in stack */
 	buf = (unsigned char *) malloc(TEST_BUF_LEN);
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command("create table " TEST_TABLE_NAME " (im IMAGE)");

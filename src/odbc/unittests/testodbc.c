@@ -410,8 +410,6 @@ RunTests(void)
 
 TEST_MAIN()
 {
-	odbc_use_version3 = true;
-
 	if (RunTests())
 		return 0;	/* Success */
 	return 1;	/* Error code */

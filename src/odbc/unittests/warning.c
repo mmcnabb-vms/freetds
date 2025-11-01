@@ -47,6 +47,7 @@ Test(const char *query)
 
 TEST_MAIN()
 {
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command("CREATE TABLE #warning(name varchar(20), value int null)");

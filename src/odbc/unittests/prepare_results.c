@@ -65,6 +65,7 @@ TEST_MAIN()
 {
 	SQLSMALLINT count;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command("create table #odbctestdata (i int, c char(20), n numeric(34,12) )");

@@ -10,6 +10,7 @@ TEST_MAIN()
 	SQLTCHAR sqlstate[6];
 	SQLTCHAR msg[256];
 
+	odbc_use_version3 = false;
 	odbc_connect();
 	odbc_check_cursor();
 

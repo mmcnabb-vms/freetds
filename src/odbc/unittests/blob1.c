@@ -241,7 +241,6 @@ TEST_MAIN()
 	char sql[256];
 	test_info *t = NULL;
 
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	/* tests (W)CHAR/BINARY -> (W)CHAR/BINARY (9 cases) */

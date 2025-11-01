@@ -133,6 +133,7 @@ Test(int use_sql)
 
 TEST_MAIN()
 {
+	odbc_use_version3 = false;
 	odbc_connect();
 	odbc_check_cursor();
 

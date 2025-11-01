@@ -64,6 +64,8 @@ TEST_MAIN()
 {
 	char tmp[1024*3];
 
+	odbc_use_version3 = false;
+
 	if (odbc_read_login_info())
 		exit(1);
 

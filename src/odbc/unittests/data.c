@@ -104,6 +104,7 @@ TEST_MAIN()
 	FILE *f;
 	odbc_parser *parser;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	f = fopen(in_file, "r");

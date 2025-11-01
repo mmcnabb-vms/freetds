@@ -26,6 +26,7 @@ TEST_MAIN()
 	SQLLEN ind1, ind2;
 	char name[64];
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	CHKGetStmtAttr(SQL_ATTR_APP_ROW_DESC, &ard, 0, NULL, "S");

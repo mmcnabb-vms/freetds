@@ -92,6 +92,7 @@ TEST_MAIN()
 {
 	int retcode = 0;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	/* create table */

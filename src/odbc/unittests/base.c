@@ -5,7 +5,7 @@
 TEST_MAIN()
 {
 	/* TODO remove if not neeeded */
-	odbc_use_version3 = true;
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	/* TODO write your test */

@@ -256,6 +256,7 @@ TEST_MAIN()
 	check_attr_t check_attr_p = check_attr_none;
 	odbc_parser *parser;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 	odbc_command("SET TEXTSIZE 4096");
 

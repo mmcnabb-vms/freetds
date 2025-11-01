@@ -62,8 +62,6 @@ close_last_socket(void)
 
 TEST_MAIN()
 {
-	odbc_use_version3 = true;
-
 	odbc_mark_sockets_opened();
 	odbc_connect();
 

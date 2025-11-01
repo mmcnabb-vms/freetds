@@ -12,6 +12,7 @@ TEST_MAIN()
 	SQLINTEGER out1;
 	char out2[30];
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command("IF OBJECT_ID('simpleresult') IS NOT NULL DROP PROC simpleresult");

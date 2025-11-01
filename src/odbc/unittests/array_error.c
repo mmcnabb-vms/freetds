@@ -12,7 +12,6 @@ TEST_MAIN()
 	char string[20];
 	SQLINTEGER id;
 
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	odbc_command("create table #tester (id int not null primary key, name varchar(20) not null)");

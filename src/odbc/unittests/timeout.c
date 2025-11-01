@@ -22,6 +22,7 @@ TEST_MAIN()
 	HSTMT stmt;
 	SQLINTEGER i;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	/* here we can't use temporary table cause we use two connection */

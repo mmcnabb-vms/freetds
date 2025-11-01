@@ -21,6 +21,7 @@ TEST_MAIN()
 {
 	int i;
 
+	odbc_use_version3 = false;
 	odbc_connect();
 
 	odbc_command("create table #timeout(i int)");

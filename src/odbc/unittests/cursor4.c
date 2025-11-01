@@ -20,7 +20,6 @@ TEST_MAIN()
 	char buff[64];
 	SQLLEN ind;
 
-	odbc_use_version3 = true;
 	odbc_connect();
 
 	odbc_check_cursor();
