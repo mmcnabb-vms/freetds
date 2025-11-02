@@ -75,7 +75,7 @@ establish_login(int argc, char **argv)
 	}
 	read_login_info();
 
-	/* (MM) user is not necessary for MSSQL trusted logins, for example */
+	/* user is not necessary for MSSQL trusted logins */
 	return (/* *common_pwd.user && */ *common_pwd.server && *common_pwd.database)
 	    ? CS_SUCCEED : CS_FAIL;
 }
