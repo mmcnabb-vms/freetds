@@ -75,7 +75,7 @@ TEST_MAIN()
 	/* Connect using SQLConnect() with Server, User and Password from PWD file
 	 * NOTE: In Windows this looks up DSN in HKCU\Software\ODBC\ODBC.INI, with fallback to HKLM
      */
-		printf("SQLConnect(server=%s, ...) connect..\n", common_pwd.server);
+	printf("SQLConnect(server=%s, ...) connect..\n", common_pwd.server);
 	odbc_connect();
 	is_freetds = odbc_driver_is_freetds();
 	is_ms = odbc_db_is_microsoft();
@@ -94,8 +94,7 @@ TEST_MAIN()
 	init_connect();
 	sprintf(tmp, "DSN=%s;UID=%s;PWD=%s;DATABASE=%s;", common_pwd.server,
 		common_pwd.user, common_pwd.password, common_pwd.database);
-	/* note: final argument "SI" means CHKDriverConnect will exit() if the result is not Success or Sucess With Info */
-	rc = CHKDriverConnect(NULL, T(tmp), SQL_NTS, (SQLTCHAR *) tmp, sizeof(tmp)/sizeof(SQLTCHAR), &len, SQL_DRIVER_NOPROMPT, "SI");
+	CHKDriverConnect(NULL, T(tmp), SQL_NTS, (SQLTCHAR *) tmp, sizeof(tmp)/sizeof(SQLTCHAR), &len, SQL_DRIVER_NOPROMPT, "SI");
 	odbc_disconnect();
 	++succeeded;
 
