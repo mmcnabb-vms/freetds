@@ -27,10 +27,10 @@ static const column_t columns[] = {
 	{ 0, NULL, NULL },
 };
 
-static void hexdump(FILE* fp, char const* prefix, void const* p, size_t n)
+static void hexdump(FILE* fp, const char* prefix, const void* p, size_t n)
 {
+	unsigned const char* cp = p;
 	fprintf(fp, "%s", prefix);
-	unsigned char const* cp = p;
 	while (n--)
 		fprintf(fp, "%02X", *cp++);
 	fprintf(fp, "\n");
