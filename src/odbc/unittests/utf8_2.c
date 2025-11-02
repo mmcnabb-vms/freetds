@@ -110,7 +110,7 @@ TEST_MAIN()
 			fprintf(stderr, "Wrong row %d %s\n", n+1, out[p[n].num]);
 			size_t len = strlen(p[n].out);
 			hexdump(stderr, "Expect: ", p[n].out, len);
-			hexdump(stderr, "Got   : ", out[p[n].num], len);
+			hexdump(stderr, "Got   : ", out[p[n].num], strlen(out[p[n].num]));
 			odbc_disconnect();
 			return 1;
 		}
