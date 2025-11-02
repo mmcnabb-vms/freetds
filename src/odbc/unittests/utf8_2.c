@@ -82,22 +82,18 @@ TEST_MAIN()
 
 	/* test conversions in libTDS
 	 *
-	 * Because column type is VARCHAR with collation defined, SQL Server returns
-	 * the data as CP1255 (hebrew) or GB18030 (CN), and FreeTDS's built-in iconv
-	 * doesn't support those. So this test fails in Windows where libiconv is not
-	 * really supported, although it works in Linux.
+	 * Because column type is VARCHAR with collation defined, SQL Server
+	 * returns the data as CP1255 (hebrew) or GB18030 (CN), and FreeTDS's
+	 * built-in iconv doesn't support those. So you need iconv installed
+	 * in Windows to pass this test.
 	 *
-	 * Using NVARCHAR makes this test work as it causes the server to return the
-	 * data in wide characters. This could also be done in the CREATE TABLE,
-	 * using NVARCHAR instead of VARCHAR.
-	 *
-	 * Changing the collation type to a UTF-8 collation would fix the SELECT,
-	 * however the INSERT statements would need to be modified.
+	 * Using NVARCHAR makes this test work with FreeTDS's built-in iconv
+	 * as it causes the server to return the data in wide characters.
 	*/
 #if HAVE_ICONV
 	odbc_command("SELECT hebrew, cn FROM #tmp ORDER BY i");
 #else
-	fprintf(stderr, "Bypassing Hebrew MBCS test since iconv not installed (Forcing server to send UTF-8).\n");
+	fprintf(stderr, "Bypassing Hebrew MBCS test since iconv not installed (Forcing server to send UTF-16).\n");
 	odbc_command("SELECT CAST(hebrew AS NVARCHAR(20)), CAST(cn AS NVARCHAR(20)) FROM #tmp ORDER BY i");
 #endif
 	/* insert with SQLPrepare/SQLBindParameter/SQLExecute */
