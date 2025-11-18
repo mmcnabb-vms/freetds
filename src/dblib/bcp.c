@@ -1257,9 +1257,14 @@ _bcp_read_hostfile(DBPROCESS * dbproc, FILE * hostfile, bool *row_error, bool sk
 
 		tdsdump_log(TDS_DBG_FUNC, "prefix_len = %d collen = %d \n", hostcol->prefix_len, collen);
 
-		/* Fixed Length data - this overrides anything else specified */
-
-		if (is_fixed_type(hostcol->datatype))
+		/*
+		 * If there wasn't a prefix, determine how many bytes to read based on the
+		 * width of the fixed type.  (Would not make sense to read a different
+		 * number of bytes than the prefix specified we should read -- a length
+		 * mismatch there should be caught when the data read is converted to the
+		 * destination type).
+		 */
+		if (hostcol->prefix_len == 0 && is_fixed_type(hostcol->datatype))
 			collen = tds_get_size_by_type(hostcol->datatype);
 
 		col_start = ftello(hostfile);
