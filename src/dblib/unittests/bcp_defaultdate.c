@@ -87,7 +87,7 @@ test_bind(DBPROCESS * dbproc)
 	if (is_ms)
 		fOK = VARCHAR_BIND(dt);
 
-	/* Leave nullable-datetime unbound */
+	/* Leave nullable fields unbound */
 
 	assert(fOK == SUCCEED); 
 }
