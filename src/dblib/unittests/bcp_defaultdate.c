@@ -72,12 +72,23 @@ test_bind(DBPROCESS * dbproc)
 {
 	enum { prefixlen = 0 };
 	enum { termlen = 0 };
+	static char dt[] = "2025-12-01 01:23:45";
 
 	RETCODE fOK;
 	int col=1;
 
-	/* non nulls */
-	fOK = INT_BIND(not_null_int);
+	/* Bind the non-null int field */
+ 	fOK = INT_BIND(not_null_int);
+
+	/* Non-nullable datetime: we can only leave it unbound on ASE, as 
+	 * MSSQL doesn't support generating defaults for NOT NULL fields via BCP.
+	 */
+	bool is_ms = DBTDS_5_0 != DBTDS(dbproc);
+	if (is_ms)
+		fOK = VARCHAR_BIND(dt);
+
+	/* Leave nullable-datetime unbound */
+
 	assert(fOK == SUCCEED); 
 }
 
@@ -132,7 +143,7 @@ TEST_MAIN()
 	test_bind(dbproc);
 
 	printf("Sending row...\n");
-	if (bcp_sendrow(dbproc) == FAIL) {
+ 	if (bcp_sendrow(dbproc) == FAIL) {
 		fprintf(stderr, "send failed\n");
 		exit(1);
 	}
