@@ -1959,6 +1959,7 @@ tds_process_row(TDSSOCKET * tds)
 		tdsdump_log(TDS_DBG_INFO1, "tds_process_row(): reading column %d\n", i);
 		curcol = info->columns[i];
 		TDS_PROPAGATE(curcol->funcs->get_data(tds, curcol));
+		tdsdump_col(curcol);
 	}
 	return TDS_SUCCESS;
 }
