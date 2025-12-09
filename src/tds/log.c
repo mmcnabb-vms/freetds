@@ -486,9 +486,10 @@ void
 tdsdump_col(const TDSCOLUMN *col)
 {
 	char buf[30];
-	char* data = buf;
+	char* data = NULL;
 	int data_len = -1;
 	TDS_SMALLINT type;
+	TDSDATEREC dr;
 
 	assert(col);
 	assert(col->column_data);
@@ -507,23 +508,37 @@ tdsdump_col(const TDSCOLUMN *col)
 		break;
 	case SYBINT1:
 		snprintf(buf, sizeof buf, "%d", (int)*(TDS_TINYINT*)col->column_data);
+		data = buf;
 		break;
 	case SYBINT2:
 		snprintf(buf, sizeof buf, "%d", (int)*(TDS_SMALLINT*)col->column_data);
+		data = buf;
 		break;
 	case SYBINT4:
 		snprintf(buf, sizeof buf, "%d", (int)*(TDS_INT*)col->column_data);
+		data = buf;
 		break;
 	case SYBREAL:
 		snprintf(buf, sizeof buf, "%f", (double)*(TDS_REAL*)col->column_data);
+		data = buf;
 		break;
 	case SYBFLT8:
 		snprintf(buf, sizeof buf, "%f", (double)*(TDS_FLOAT*)col->column_data);
+		data = buf;
 		break;
-	default:
-		data = "(unsupported data format for log dump)";
+	case SYBDATETIMN:
+		if (col->column_data[0] == 8 && TDS_SUCCESS == tds_datecrack(SYBDATETIME, col->column_data + 1, &dr))
+			tds_strftime(data = buf, sizeof buf, "%b %d %Y %H:%M:%S", &dr, 3);
+		break;
+
+	case SYBDATETIME:
+		if (TDS_SUCCESS == tds_datecrack(SYBDATETIME, col->column_data, &dr))
+			tds_strftime(data = buf, sizeof buf, "%b %d %Y %H:%M:%S", &dr, 3);
 		break;
 	}
+
+	if ( !data )
+		data = "(unsupported data format for log dump)";
 
 	tdsdump_log(TDS_DBG_FUNC, "Column \"%s\" type \"%s\" has value \"%.*s\"\n",
 		col->column_name ? tds_dstr_cstr(&col->column_name) : "",
