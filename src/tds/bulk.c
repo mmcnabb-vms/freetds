@@ -1041,6 +1041,7 @@ enum {
 	BULKCOL_length,
 	BULKCOL_status,
 	BULKCOL_offset,
+	BULKCOL_dflt,
 
 	/* number of columns needed */
 	BULKCOL_COUNT,
@@ -1057,10 +1058,14 @@ tds5_bulk_insert_column(const char *name)
 		return BULKCOL_ ## n; \
 } while(0)
 
+	/* An impromptu hash table */
 	switch (name[0]) {
 	case 'c':
 		BULKCOL(colcnt);
 		BULKCOL(colid);
+		break;
+	case 'd':
+		BULKCOL(dflt);
 		break;
 	case 't':
 		BULKCOL(type);
