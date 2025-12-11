@@ -637,7 +637,7 @@ tds5_bcp_add_fixed_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_dat
 	TDS_NUMERIC *num;
 	int row_pos = start;
 	int cpbytes;
-	int i;
+	TDS_INT i;
 	int bitleft = 0, bitpos = 0;
 
 	assert(bcpinfo);
@@ -647,13 +647,13 @@ tds5_bcp_add_fixed_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_dat
 		    bcpinfo, get_col_data, null_error, offset, rowbuffer, start);
 
 	for (i = 0; i < bcpinfo->bindinfo->num_cols; i++) {
-
 		TDSCOLUMN *const bcpcol = bcpinfo->bindinfo->columns[i];
+		TDS5COLINFO* const sycol = i < bcpinfo->sybase_count ? &bcpinfo->sybase_colinfo[i] : NULL;
 		const TDS_INT column_size = bcpcol->on_server.column_size;
 
 		/* if possible check information from server */
-		if (bcpinfo->sybase_count > i) {
-			if (bcpinfo->sybase_colinfo[i].offset < 0)
+		if (sycol) {
+			if (sycol->offset < 0)
 				continue;
 		} else {
 			if (is_nullable_type(bcpcol->on_server.column_type) || bcpcol->column_nullable)
@@ -665,6 +665,26 @@ tds5_bcp_add_fixed_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_dat
 		if (TDS_FAILED(get_col_data(bcpinfo, bcpcol, offset))) {
 			tdsdump_log(TDS_DBG_INFO1, "get_col_data (column %d) failed\n", i + 1);
 			return -1;
+		}
+
+		/* If data was null and we have a default value, apply it */
+		if (bcpcol->bcp_column_data->is_null && sycol && sycol->has_default )
+		{
+			tdsdump_log(TDS_DBG_INFO1, "tds5_bcp_add_fixed_columns column %d applying default value\n", i + 1);
+
+			/* Sanity checks - we do not expect these to be triggered */
+			if (!sycol->default_value.data || sycol->default_type != bcpcol->column_type
+				|| column_size != sycol->default_value.datalen )
+			{
+				tdsdump_log(TDS_DBG_ERROR, "column %d default (%p) type %d size %d not match server type %d size %d\n",
+					i + 1, (void*)sycol->default_value.data,
+					sycol->default_type, (int)sycol->default_value.datalen,
+					bcpcol->column_type, column_size);
+				return -1;
+			}
+			memcpy(&rowbuffer[row_pos], sycol->default_value.data, column_size);
+			row_pos += column_size;
+			continue;
 		}
 
 		/* We have no way to send a NULL at this point, return error to client */
@@ -726,8 +746,8 @@ tds5_bcp_add_variable_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_
 			      int offset, TDS_UCHAR* rowbuffer, int start, int *pncols)
 {
 	TDS_USMALLINT offsets[256];
-	unsigned int i, row_pos;
-	unsigned int ncols = 0;
+	TDS_INT i, ncols = 0;
+	unsigned int row_pos;
 
 	assert(bcpinfo);
 	assert(rowbuffer);
@@ -756,13 +776,13 @@ tds5_bcp_add_variable_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_
 	for (i = 0; i < bcpinfo->bindinfo->num_cols; i++) {
 		unsigned int cpbytes = 0;
 		TDSCOLUMN *bcpcol = bcpinfo->bindinfo->columns[i];
-
+		TDS5COLINFO* const sycol = i < bcpinfo->sybase_count ? &bcpinfo->sybase_colinfo[i] : NULL;
 		/*
 		 * Is this column of "variable" type, i.e. NULLable
 		 * or naturally variable length e.g. VARCHAR
 		 */
-		if (bcpinfo->sybase_count > (TDS_INT) i) {
-			if (bcpinfo->sybase_colinfo[i].offset >= 0)
+		if (sycol) {
+			if (sycol->offset >= 0)
 				continue;
 		} else {
 			if (!is_nullable_type(bcpcol->on_server.column_type) && !bcpcol->column_nullable)
@@ -774,29 +794,50 @@ tds5_bcp_add_variable_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_
 		if (TDS_FAILED(get_col_data(bcpinfo, bcpcol, offset)))
 			return -1;
 
-		/* If it's a NOT NULL column, and we have no data, throw an error.
-		 * This is the behavior for Sybase, this function is only used for Sybase */
-		if (!bcpcol->column_nullable && bcpcol->bcp_column_data->is_null) {
-			/* No value or default value available and NULL not allowed. */
-			if (null_error)
-				null_error(bcpinfo, i, offset);
-			return -1;
-		}
+		/* If data was null and we have a default value, apply it */
+		if (bcpcol->bcp_column_data->is_null && sycol && sycol->has_default )
+		{
+			tdsdump_log(TDS_DBG_INFO1, "tds5_bcp_add_variable_columns column %d applying default value\n", i + 1);
 
-		/* move the column buffer into the rowbuffer */
-		if (!bcpcol->bcp_column_data->is_null) {
-			if (is_blob_type(bcpcol->on_server.column_type)) {
-				cpbytes = 16;
-				bcpcol->column_textpos = row_pos;               /* save for data write */
-			} else if (is_numeric_type(bcpcol->on_server.column_type)) {
-				TDS_NUMERIC *num = (TDS_NUMERIC *) bcpcol->bcp_column_data->data;
-				cpbytes = tds_numeric_bytes_per_prec[num->precision];
-				memcpy(&rowbuffer[row_pos], num->array, cpbytes);
-			} else {
-				cpbytes = bcpcol->bcp_column_data->datalen > bcpcol->column_size ?
-				bcpcol->column_size : bcpcol->bcp_column_data->datalen;
-				memcpy(&rowbuffer[row_pos], bcpcol->bcp_column_data->data, cpbytes);
-				tds5_swap_data(bcpcol, &rowbuffer[row_pos]);
+			/* Sanity checks - we do not expect these to be triggered */
+			if (!sycol->default_value.data || sycol->default_type != bcpcol->on_server.column_type)
+			{
+				tdsdump_log(TDS_DBG_ERROR, "column %d default (%p) type %d not match server type %d\n",
+					i + 1, (void*)sycol->default_value.data,
+					sycol->default_type, bcpcol->on_server.column_type);
+				return -1;
+			}
+			cpbytes = sycol->default_value.datalen;
+			memcpy(&rowbuffer[row_pos], sycol->default_value.data, cpbytes);
+		}
+		else
+		{
+			/* If it's a NOT NULL column, and we have no data, throw an error.
+			 * This is the behavior for Sybase, this function is only used for Sybase */
+			if (!bcpcol->column_nullable && bcpcol->bcp_column_data->is_null) {
+				/* No value or default value available and NULL not allowed. */
+				if (null_error)
+					null_error(bcpinfo, i, offset);
+				return -1;
+			}
+
+			/* move the column buffer into the rowbuffer */
+			if (!bcpcol->bcp_column_data->is_null) {
+				if (is_blob_type(bcpcol->on_server.column_type)) {
+					cpbytes = 16;
+					bcpcol->column_textpos = row_pos;               /* save for data write */
+				} else if (is_numeric_type(bcpcol->on_server.column_type)) {
+					TDS_NUMERIC* num = (TDS_NUMERIC*)bcpcol->bcp_column_data->data;
+					cpbytes = tds_numeric_bytes_per_prec[num->precision];
+					memcpy(&rowbuffer[row_pos], num->array, cpbytes);
+				} else {
+					/* TODO: I'm not sure we should be truncating if data is unexpected size,
+					 * should log an error instead? */
+					cpbytes = bcpcol->bcp_column_data->datalen > bcpcol->column_size ?
+						bcpcol->column_size : bcpcol->bcp_column_data->datalen;
+					memcpy(&rowbuffer[row_pos], bcpcol->bcp_column_data->data, cpbytes);
+					tds5_swap_data(bcpcol, &rowbuffer[row_pos]);
+				}
 			}
 		}
 
