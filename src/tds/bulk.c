@@ -670,8 +670,9 @@ tds5_bcp_add_fixed_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_dat
 		if (bcpcol->bcp_column_data->is_null && sycol && sycol->has_default )
 		{
 			tdsdump_log(TDS_DBG_INFO1, "tds5_bcp_add_fixed_columns column %d applying default value\n", i + 1);
-
-			/* Sanity checks - we do not expect these to be triggered */
+#ifdef ENABLE_EXTRA_CHECKS
+			/* Sanity checks - Should not be possible due to the checks
+			 * in process_defaults_row(). */
 			if (!sycol->default_value.data || sycol->default_type != bcpcol->column_type
 				|| column_size != sycol->default_value.datalen )
 			{
@@ -681,6 +682,7 @@ tds5_bcp_add_fixed_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_dat
 					bcpcol->column_type, column_size);
 				return -1;
 			}
+#endif
 			memcpy(&rowbuffer[row_pos], sycol->default_value.data, column_size);
 			row_pos += column_size;
 			continue;
@@ -797,7 +799,7 @@ tds5_bcp_add_variable_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_
 		if (bcpcol->bcp_column_data->is_null && sycol && sycol->has_default )
 		{
 			tdsdump_log(TDS_DBG_INFO1, "tds5_bcp_add_variable_columns column %d applying default value\n", i + 1);
-
+#ifdef ENABLE_EXTRA_CHECKS
 			/* Sanity checks - we do not expect these to be triggered */
 			if (!sycol->default_value.data || sycol->default_type != bcpcol->on_server.column_type
 				|| sycol->default_value.datalen > bcpcol->on_server.column_size)
@@ -808,7 +810,7 @@ tds5_bcp_add_variable_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_
 					bcpcol->on_server.column_type, bcpcol->on_server.column_size);
 				return -1;
 			}
-
+#endif
 			cpbytes = sycol->default_value.datalen;
 			memcpy(&rowbuffer[row_pos], sycol->default_value.data, cpbytes);
 		}
