@@ -1401,6 +1401,11 @@ tds5_process_insert_bulk_reply(TDSSOCKET * tds, TDSBCPINFO *bcpinfo)
 				// since that's what the upload expects.
 				// If we don't do this, then for example a NUMERIC()
 				// will be unpacked to a 35-byte structure in the row results.
+				//
+				// The tds5_send_record() function does not currently use the "put_data"
+				// member of the column functions , it just rolls its own packing. It
+				// might be possible to look into using put_data for bcp record packing,
+				// then we wouldn't have to do this hack here.
 				for (int i = 0; i < tds->current_results->num_cols; ++i)
 					tds->current_results->columns[i]->funcs = &tds_generic_funcs;
 				// Don't need to reset it as there is no other row data after the Defaults
