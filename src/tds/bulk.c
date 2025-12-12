@@ -47,7 +47,8 @@
 #include <freetds/utils/string.h>
 #include <freetds/replacements.h>
 #include <freetds/enum_cap.h>
-
+#define TDS_DONT_DEFINE_DEFAULT_FUNCTIONS
+#include <freetds/data.h>			// tds_generic_funcs
 /**
  * Holds clause buffer
  */
@@ -1318,13 +1319,17 @@ static TDSRET process_defaults_row(TDSRESULTINFO* res_info, TDSBCPINFO* bcpinfo)
 		 *  - SYBDATETIMN(111) size 4 or 8
 		 *  - SYBMONEYN  (110) sizef 4 or 8
 		 *  - SYBFLTN    (109) size 4 or 8
-		 *  - SYBDECIMAL (106) size 35
-		 *  - SYBDNUMERIC(108) size 35
+		 *  - SYBDECIMAL (106) various sizes
+		 *  - SYBNUMERIC (108) various sizes
 		 *  - SYBINTN    (38)  sizes 1, 2, or 4.
 		 *
 		 * In TDS all nullable types have the same binary format as their
 		 * non-nullable equivalents (well - the other BCP code appears to make
 		 * that assumption); so we can just change the type ID.
+		 * 
+		 * See comments in tds5_process_insert_bulk_reply() regarding
+		 * unpacking of DECIMAL/NUMERIC (by default the FreeTDS row unpacker
+		 * actually expands these types into curcol).
 		 *
 		 * We don't expect any other type differences to arise.
 		 */
@@ -1391,7 +1396,18 @@ tds5_process_insert_bulk_reply(TDSSOCKET * tds, TDSBCPINFO *bcpinfo)
 				bulkcol_formats_found = true;
 			/* In testing, Defaults only come after the TDS_DONE token */
 			else if (done_seen && is_defaults_formats(tds->current_results, bcpinfo))
-				 defaults_found = true;
+			{
+				defaults_found = true;
+				// We now have to inform FreeTDS to NOT perform any processing on the raw
+				// values of defaults. We need to just save the value exactly as received
+				// since that's what the upload expects.
+				// If we don't do this, then for example a NUMERIC()
+				// will be unpacked to a 35-byte structure in the row results.
+				for (int i = 0; i < tds->current_results->num_cols; ++i)
+					tds->current_results->columns[i]->funcs = &tds_generic_funcs;
+				// Don't need to reset it as there is no other row data after the Defaults
+				// (they're part of the End block)
+			}
 			break;
 
 		case TDS_ROW_RESULT:
