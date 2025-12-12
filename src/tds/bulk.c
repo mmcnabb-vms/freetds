@@ -1328,11 +1328,11 @@ static TDSRET process_defaults_row(TDSRESULTINFO* res_info, TDSBCPINFO* bcpinfo)
 		if (scol->type != curcol->column_type)
 		{
 			TDS_SERVER_TYPE nntype = tds_get_conversion_type(curcol->column_type, cur_size);
-			if (nntype != scol->type)
+			if (nntype != scol->type || cur_size != scol->length )
 			{
 				tdsdump_log(TDS_DBG_ERROR,
-					"Default value has unexpected type %d (need %d)\n",
-					curcol->column_type, scol->type);
+					"Default value has unexpected type %d size %d (need type %d size %d)\n",
+					curcol->column_type, cur_size, scol->type, scol->length);
 				continue;
 			}
 			scol->default_type = nntype;
