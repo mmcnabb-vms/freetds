@@ -95,7 +95,7 @@ TEST_MAIN()
 	login = dblogin();
 	DBSETLPWD(login, PASSWORD);
 	DBSETLUSER(login, USER);
-	DBSETLAPP(login, "bcp2.c unit test");
+	DBSETLAPP(login, "bcp_nobind.c unit test");
 	BCP_SETL(login, TRUE);
 
 	printf("About to open %s.%s\n", SERVER, DATABASE);
