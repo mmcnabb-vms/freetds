@@ -47,8 +47,6 @@
 #include <freetds/utils/string.h>
 #include <freetds/replacements.h>
 #include <freetds/enum_cap.h>
-#define TDS_DONT_DEFINE_DEFAULT_FUNCTIONS
-#include <freetds/data.h>			// tds_generic_funcs
 /**
  * Holds clause buffer
  */
@@ -1397,7 +1395,7 @@ tds5_process_insert_bulk_reply(TDSSOCKET * tds, TDSBCPINFO *bcpinfo)
 			/* In testing, Defaults only come after the TDS_DONE token */
 			else if (done_seen && is_defaults_formats(tds->current_results, bcpinfo))
 			{
-				defaults_found = true;
+				extern TDSCOLUMNFUNCS tds_generic_funcs;
 				// We now have to inform FreeTDS to NOT perform any processing on the raw
 				// values of defaults. We need to just save the value exactly as received
 				// since that's what the upload expects.
@@ -1407,6 +1405,7 @@ tds5_process_insert_bulk_reply(TDSSOCKET * tds, TDSBCPINFO *bcpinfo)
 					tds->current_results->columns[i]->funcs = &tds_generic_funcs;
 				// Don't need to reset it as there is no other row data after the Defaults
 				// (they're part of the End block)
+				defaults_found = true;
 			}
 			break;
 
