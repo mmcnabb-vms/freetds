@@ -490,6 +490,9 @@ tdsdump_col(const TDSCOLUMN *col)
 	int data_len = -1;
 	TDS_SMALLINT type;
 	TDSDATEREC dr;
+	TDS_NUMERIC* pnumeric;
+	TDS_MONEY* pmoney;
+	TDS_MONEY4* pmoney4;
 
 	assert(col);
 	assert(col->column_data);
@@ -526,14 +529,30 @@ tdsdump_col(const TDSCOLUMN *col)
 		snprintf(buf, sizeof buf, "%f", (double)*(TDS_FLOAT*)col->column_data);
 		data = buf;
 		break;
-	case SYBDATETIMN:
-		if (col->column_data[0] == 8 && TDS_SUCCESS == tds_datecrack(SYBDATETIME, col->column_data + 1, &dr))
+	case SYBDATETIME:
+	case SYBDATETIME4:
+		if (TDS_SUCCESS == tds_datecrack(type, col->column_data, &dr))
 			tds_strftime(data = buf, sizeof buf, "%b %d %Y %H:%M:%S", &dr, 3);
 		break;
-
-	case SYBDATETIME:
-		if (TDS_SUCCESS == tds_datecrack(SYBDATETIME, col->column_data, &dr))
-			tds_strftime(data = buf, sizeof buf, "%b %d %Y %H:%M:%S", &dr, 3);
+	case SYBMONEY:
+		pmoney = (TDS_MONEY*)col->column_data;
+		snprintf(buf, sizeof buf, "$%lu%04lu.%04lu",
+			pmoney->tdsoldmoney.mnyhigh,
+			pmoney->tdsoldmoney.mnylow / 10000,
+			pmoney->tdsoldmoney.mnylow % 10000
+			);
+		data = buf;
+		break;
+	case SYBMONEY4:
+		pmoney4 = (TDS_MONEY4*)col->column_data;
+		snprintf(buf, sizeof buf, "$%lu.%04lu", pmoney4->mny4 / 10000, pmoney4->mny4 % 10000);
+		data = buf;
+		break;
+	case SYBDECIMAL:
+	case SYBNUMERIC:
+		pnumeric = (TDS_NUMERIC*)col->column_data;
+		snprintf(buf, sizeof buf, "(%d,%d) numeric", pnumeric->precision, pnumeric->scale);
+		data = buf;
 		break;
 	}
 
