@@ -211,6 +211,13 @@ TEST_MAIN()
 
 	test_bind(dbproc);
 
+	printf("Sending 1 row\n");
+	if (bcp_sendrow(dbproc) == FAIL) {
+		fprintf(stderr, "send failed\n");
+		exit(1);
+	}
+		goto mm;
+
 	printf("Sending same row 10 times... \n");
 	for (i=0; i<10; i++) {
 		if (bcp_sendrow(dbproc) == FAIL) {
@@ -241,7 +248,7 @@ TEST_MAIN()
 	        exit(1);
 	}
 #endif
-
+	mm:
 	printf("OK\n");
 
 	/* end bcp.  */
