@@ -800,13 +800,16 @@ tds5_bcp_add_variable_columns(TDSBCPINFO *bcpinfo, tds_bcp_get_col_data get_col_
 			tdsdump_log(TDS_DBG_INFO1, "tds5_bcp_add_variable_columns column %d applying default value\n", i + 1);
 
 			/* Sanity checks - we do not expect these to be triggered */
-			if (!sycol->default_value.data || sycol->default_type != bcpcol->on_server.column_type)
+			if (!sycol->default_value.data || sycol->default_type != bcpcol->on_server.column_type
+				|| sycol->default_value.datalen > bcpcol->on_server.column_size)
 			{
-				tdsdump_log(TDS_DBG_ERROR, "column %d default (%p) type %d not match server type %d\n",
+				tdsdump_log(TDS_DBG_ERROR, "column %d default (%p) type %d size %d not match server type %d size %d\n",
 					i + 1, (void*)sycol->default_value.data,
-					sycol->default_type, bcpcol->on_server.column_type);
+					sycol->default_type, (int)sycol->default_value.datalen,
+					bcpcol->on_server.column_type, bcpcol->on_server.column_size);
 				return -1;
 			}
+
 			cpbytes = sycol->default_value.datalen;
 			memcpy(&rowbuffer[row_pos], sycol->default_value.data, cpbytes);
 		}
