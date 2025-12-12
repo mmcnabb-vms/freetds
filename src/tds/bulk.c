@@ -1311,8 +1311,11 @@ static TDSRET process_defaults_row(TDSRESULTINFO* res_info, TDSBCPINFO* bcpinfo)
 			continue;
 		}
 
-		/* Testing shows that the default value can have a nullable type.
-		 * The following were observed in the "d_bcp" test:
+		/* Testing shows that the default value can have a nullable type,
+		 * even if the column is defined as NOT NULL and therefore must
+		 * be packed for upload as a non-nullable type.
+		 *
+		 * The following defaults were observed in the "d_bcp" test:
 		 *  - SYBVARCHAR (39)  various sizes
 		 *  - SYBDATETIMN(111) size 4 or 8
 		 *  - SYBMONEYN  (110) sizef 4 or 8
@@ -1329,19 +1332,34 @@ static TDSRET process_defaults_row(TDSRESULTINFO* res_info, TDSBCPINFO* bcpinfo)
 		 * unpacking of DECIMAL/NUMERIC (by default the FreeTDS row unpacker
 		 * actually expands these types into curcol).
 		 *
-		 * We don't expect any other type differences to arise.
+		 * So, here we validate that the type of the default value either
+		 * matches the server column, or is a Nullable version of the
+		 * server column's type.
 		 */
-		if (scol->type != curcol->column_type)
+		if (scol->type != curcol->column_type )
 		{
 			TDS_SERVER_TYPE nntype = tds_get_conversion_type(curcol->column_type, cur_size);
-			if (nntype != scol->type || cur_size != scol->length )
+			if (nntype != scol->type)
 			{
 				tdsdump_log(TDS_DBG_ERROR,
-					"Default value has unexpected type %d size %d (need type %d size %d)\n",
-					curcol->column_type, cur_size, scol->type, scol->length);
+					"Default value has unexpected type %d (need type %d)\n",
+					curcol->column_type, scol->type);
 				continue;
 			}
 			scol->default_type = nntype;
+		}
+
+		/* If the server column is non-nullable
+ 		 * we have to validate that the default is the right size for it.
+		 * (nullable types have a length prefix so don't need to match length).
+		 */
+		if ( !is_nullable_type(scol->default_type) && cur_size != scol->length )
+		{
+			tdsdump_log(TDS_DBG_ERROR,
+				"Default value type %d has unexpected size %d (need type %d size %d)\n",
+				curcol->column_type, cur_size, scol->type, scol->length);
+			/* We could "continue" to ignore this, but it's probably best to fail */
+			return TDS_FAIL;
 		}
 
 		scol->default_value.data = tds_new(char, cur_size);
@@ -1406,8 +1424,8 @@ tds5_process_insert_bulk_reply(TDSSOCKET * tds, TDSBCPINFO *bcpinfo)
 				// member of the column functions , it just rolls its own packing. It
 				// might be possible to look into using put_data for bcp record packing,
 				// then we wouldn't have to do this hack here.
-				for (int i = 0; i < tds->current_results->num_cols; ++i)
-					tds->current_results->columns[i]->funcs = &tds_generic_funcs;
+//				for (int i = 0; i < tds->current_results->num_cols; ++i)
+//					tds->current_results->columns[i]->funcs = &tds_generic_funcs;
 				// Don't need to reset it as there is no other row data after the Defaults
 				// (they're part of the End block)
 				defaults_found = true;
