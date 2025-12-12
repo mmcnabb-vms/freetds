@@ -34,8 +34,8 @@ CREATE TABLE all_types_bcp_unittest (
 	, nullable_float		float  		DEFAULT(3.14159) NULL
 	, nullable_real			real  		DEFAULT(2.71828) NULL
 
-	, nullable_decimal		decimal(5,2)  NULL
-	, nullable_numeric		numeric(5,2)  NULL
+	, nullable_decimal		decimal(25,2) DEFAULT(12345678901234567890123.45) NULL
+	, nullable_numeric		numeric(5,2)  DEFAULT(123.45) NULL
 
 	, nullable_int			int  		DEFAULT(210987654) NULL
 	, nullable_smallint		smallint  	DEFAULT(413) NULL
