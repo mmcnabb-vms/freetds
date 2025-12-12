@@ -1309,11 +1309,19 @@ static TDSRET process_defaults_row(TDSRESULTINFO* res_info, TDSBCPINFO* bcpinfo)
 			continue;
 		}
 
-		/* Testing shows that the default value can have a nullable type --
-		 * e.g. a "datetime not null" default value arrived with SYBDATETIMN
-		 * type. In TDS all nullable types have the same binary format as their
+		/* Testing shows that the default value can have a nullable type.
+		 * The following were observed in the "d_bcp" test:
+		 *  - SYBVARCHAR (39)  various sizes
+		 *  - SYBDATETIMN(111) size 4 or 8
+		 *  - SYBMONEYN  (110) sizef 4 or 8
+		 *  - SYBFLTN    (109) size 4 or 8
+		 *  - SYBDECIMAL (106) size 35
+		 *  - SYBDNUMERIC(108) size 35
+		 *  - SYBINTN    (38)  sizes 1, 2, or 4.
+		 *
+		 * In TDS all nullable types have the same binary format as their
 		 * non-nullable equivalents (well - the other BCP code appears to make
-		 * that assumption); in that case just change the type id.
+		 * that assumption); so we can just change the type ID.
 		 *
 		 * We don't expect any other type differences to arise.
 		 */
