@@ -197,7 +197,7 @@ select   'nullable_char' as col, count(*) nrows, datalength(nullable_char) as le
 UNION
 select   'nullable_varchar' as col, count(*) nrows, datalength(nullable_varchar) as len, nullable_varchar as value from all_types_bcp_unittest group by nullable_varchar
 UNION
-select   'nullable_int' as col, count(*) nrows, datalength(nullable_int) as len, cast(nullable_int as varchar(6))as value from all_types_bcp_unittest group by nullable_int
+select   'nullable_int' as col, count(*) nrows, datalength(nullable_int) as len, cast(nullable_int as varchar(10))as value from all_types_bcp_unittest group by nullable_int
 order by col, len, nrows
 
 go
