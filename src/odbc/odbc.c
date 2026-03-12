@@ -4444,6 +4444,28 @@ odbc_SQLFreeStmt(SQLHSTMT hstmt, SQLUSMALLINT fOption, int force)
 		TDSSOCKET *tds;
 
 		tds = stmt->tds;
+
+		/* Optimization - don't need to Cancel a running operation
+		 * if it's already delivered an End token that we just
+		 * haven't processed yet.
+		 * E.g. after Fetching the only row of a SELECT result.
+		 */
+		if (tds && tds->state == TDS_PENDING)
+		{
+			unsigned char marker = tds_peek(tds);
+			if ( is_end_token(marker) )
+			{
+				TDS_INT result_type;
+				TDSRET result;
+				tdsdump_log(TDS_DBG_INFO1,
+					"Running operation is at end token (%d)\n", marker);
+				result = tds_process_tokens(tds, &result_type, NULL, 0);
+				tdsdump_log(TDS_DBG_INFO1, "Running operation end token "
+						"processing: result=%d, type=%d, state=%d\n",
+						result, result_type, tds->state);
+			}
+		}
+
 		/*
 		 * FIXME -- otherwise make sure the current statement is complete
 		 */
