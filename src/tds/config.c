@@ -680,6 +680,12 @@ tds_parse_conf_section(const char *option, const char *value, void *param)
 		parse_boolean(option, value, tds_append_mode);
 	} else if (!strcmp(option, TDS_STR_INSTANCE)) {
 		dstr_to_set = &login->instance_name;
+	} else if (!strcmp(option, TDS_STR_ODBC_DATETIMEFMT)) {
+		dstr_to_set = &login->odbc_datetime_format;
+	} else if (!strcmp(option, TDS_STR_ODBC_DATEFMT)) {
+		dstr_to_set = &login->odbc_date_format;
+	} else if (!strcmp(option, TDS_STR_ODBC_TIMEFMT)) {
+		dstr_to_set = &login->odbc_time_format;
 	} else if (!strcmp(option, TDS_STR_ENCRYPTION)) {
 		if (!tds_config_encryption(value, login))
 			got_error = true;

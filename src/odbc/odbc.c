@@ -380,6 +380,18 @@ odbc_connect(TDS_DBC * dbc, TDSLOGIN * login)
 
 	tds_fix_login(login);
 
+	/* Save custom date formats into DBC (login does not persist once connection completed) */
+	if (!tds_dstr_isempty(&login->odbc_datetime_format))
+		tds_dstr_dup(&dbc->odbc_datetime_format, &login->odbc_datetime_format);
+
+	if (!tds_dstr_isempty(&login->odbc_date_format))
+		tds_dstr_dup(&dbc->odbc_date_format, &login->odbc_date_format);
+
+	if (!tds_dstr_isempty(&login->odbc_time_format))
+		tds_dstr_dup(&dbc->odbc_time_format, &login->odbc_time_format);
+
+
+
 	/* use connection timeout if set */
 	if (dbc->attr.connection_timeout)
 		login->connect_timeout = dbc->attr.connection_timeout;
@@ -1769,6 +1781,13 @@ odbc_SQLAllocConnect(SQLHENV henv, SQLHDBC FAR * phdbc)
 	dbc->attr.txn_isolation = SQL_TXN_READ_COMMITTED;
 	dbc->attr.mars_enabled = SQL_MARS_ENABLED_NO;
 	dbc->attr.bulk_enabled = SQL_BCP_OFF;
+
+	tds_dstr_init(&dbc->odbc_datetime_format);
+	tds_dstr_copy(&dbc->odbc_datetime_format, "%Y-%m-%d %H:%M:%S.%z");
+	tds_dstr_init(&dbc->odbc_date_format);
+	tds_dstr_copy(&dbc->odbc_date_format, "%Y-%m-%d");
+	tds_dstr_init(&dbc->odbc_time_format);
+	tds_dstr_copy(&dbc->odbc_time_format, "%H:%M:%S.%z");
 
 	tds_mutex_init(&dbc->mtx);
 	*phdbc = (SQLHDBC) dbc;

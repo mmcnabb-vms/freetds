@@ -436,6 +436,9 @@ is_tds_type_valid(int type)
 #define TDS_STR_DATETIMEFMT	"date format"
 #define TDS_STR_DATEFMT	"date-only format"
 #define TDS_STR_TIMEFMT	"time-only format"
+#define TDS_STR_ODBC_DATETIMEFMT	"odbc date format"
+#define TDS_STR_ODBC_DATEFMT	"odbc date-only format"
+#define TDS_STR_ODBC_TIMEFMT	"odbc time-only format"
 #define TDS_STR_INSTANCE "instance"
 #define TDS_STR_ASA_DATABASE	"asa database"
 #define TDS_STR_DATABASE	"database"
@@ -523,6 +526,10 @@ typedef struct tds_login
 	DSTR user_name;	    	/**< account for login */
 	DSTR password;	    	/**< password of account login */
 	DSTR new_password;	    	/**< new password to set (TDS 7.2+) */
+
+	DSTR odbc_datetime_format;
+	DSTR odbc_date_format;
+	DSTR odbc_time_format;
 
 	DSTR library;	/* Ct-Library, DB-Library,  TDS-Library or ODBC */
 	TDS_TINYINT encryption_level;
