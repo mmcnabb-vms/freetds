@@ -1770,6 +1770,9 @@ odbc_SQLAllocConnect(SQLHENV henv, SQLHDBC FAR * phdbc)
 	dbc->attr.mars_enabled = SQL_MARS_ENABLED_NO;
 	dbc->attr.bulk_enabled = SQL_BCP_OFF;
 
+	tds_dstr_init(&dbc->date_format);
+	tds_dstr_copy(&dbc->date_format, "%Y-%m-%d %H:%M:%S.%z");
+
 	tds_mutex_init(&dbc->mtx);
 	*phdbc = (SQLHDBC) dbc;
 
@@ -6611,6 +6614,10 @@ ODBC_FUNC(SQLSetConnectAttr, (P(SQLHDBC,hdbc), P(SQLINTEGER,Attribute), P(SQLPOI
 			odbc_bcp_init(dbc, (const ODBC_CHAR *) params->tblname, (const ODBC_CHAR *) params->hfile,
 				      (const ODBC_CHAR *) params->errfile, params->direction _wide0);
 		}
+		break;
+	case SQL_COPT_TDSODBC_IMPL_DATE_FORMAT:
+		if (!odbc_dstr_copy(dbc, &dbc->date_format, StringLength, (ODBC_CHAR *)ValuePtr))
+			odbc_errs_add(&dbc->errs, "HY001", NULL);
 		break;
 #ifdef ENABLE_ODBC_WIDE
 	case SQL_COPT_TDSODBC_IMPL_BCP_INITW:

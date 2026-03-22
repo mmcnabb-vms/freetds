@@ -381,7 +381,9 @@ odbc_tds2sql(TDS_STMT * stmt, TDSCOLUMN *curcol, int srctype, TDS_CHAR * src, TD
 		case SYBDATETIME4:
 			prec = 0;
 		datetime:
-			fmt = context->locale->datetime_fmt;
+			fmt = tds_dstr_isempty(&stmt->dbc->date_format)
+				? context->locale->datetime_fmt
+				: tds_dstr_cstr(&stmt->dbc->date_format);
 			break;
 		case SYBMSTIME:
 			prec = dta->time_prec;
