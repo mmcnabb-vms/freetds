@@ -1,4 +1,5 @@
 #include "common.h"
+#include <odbcss.h>
 
 static void
 DoTest(int n)
@@ -9,8 +10,14 @@ DoTest(int n)
 	SQLULEN colSize;
 	SQLSMALLINT colScale, colNullable;
 	SQLLEN dataSize;
+	char const* expect;
 
 	TIMESTAMP_STRUCT ts;
+
+	if ( n == 2 )
+		SQLSetConnectAttr(odbc_conn, SQL_COPT_TDSODBC_IMPL_DATE_FORMAT, T("%d-%m-%Y %H:%M:%S"), SQL_NTS);
+	else
+		SQLSetConnectAttr(odbc_conn, SQL_COPT_TDSODBC_IMPL_DATE_FORMAT, T(""), SQL_NTS);
 
 	odbc_command("select convert(datetime, '2002-12-27 18:43:21')");
 
@@ -24,9 +31,13 @@ DoTest(int n)
 	} else {
 		CHKGetData(1, SQL_C_CHAR, output, sizeof(output), &dataSize, "S");
 	}
+	if (n == 2)
+		expect = "27-12-2002 18:43:21";
+	else
+		expect = "2002-12-27 18:43:21.000";
 
 	printf("Date returned: %s\n", output);
-	if (strcmp((char *) output, "2002-12-27 18:43:21.000") != 0) {
+	if (strcmp((char *) output, expect) != 0) {
 		fprintf(stderr, "Invalid returned date\n");
 		exit(1);
 	}
@@ -41,6 +52,7 @@ TEST_MAIN()
 
 	DoTest(0);
 	DoTest(1);
+	DoTest(2);
 
 	odbc_disconnect();
 
