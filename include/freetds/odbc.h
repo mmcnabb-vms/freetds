@@ -311,6 +311,10 @@ struct _hdbc
 	TDS_INT default_query_timeout;
 
 	TDSBCPINFO *bcpinfo;
+
+	DSTR odbc_datetime_format;
+	DSTR odbc_date_format;
+	DSTR odbc_time_format;
 };
 
 struct _hsattr

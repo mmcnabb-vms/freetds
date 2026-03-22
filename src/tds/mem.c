@@ -1005,6 +1005,9 @@ tds_alloc_login(bool use_environment)
 	login->dump_file = NULL;
 	tds_dstr_init(&login->client_charset);
 	tds_dstr_init(&login->instance_name);
+	tds_dstr_init(&login->odbc_datetime_format);
+	tds_dstr_init(&login->odbc_date_format);
+	tds_dstr_init(&login->odbc_time_format);
 	tds_dstr_init(&login->server_realm_name);
 	tds_dstr_init(&login->server_spn);
 	tds_dstr_init(&login->cafile);
