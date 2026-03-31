@@ -515,6 +515,8 @@ bool get_login_info(HWND hwndParent, TDSLOGIN * login);
 	ODBC_PARAM(ClientCharset) \
 	ODBC_PARAM(ConnectionTimeout) \
 	ODBC_PARAM(Database) \
+	ODBC_PARAM(DateFmt) \
+	ODBC_PARAM(DateTimeFmt) \
 	ODBC_PARAM(DebugFlags) \
 	ODBC_PARAM(DSN) \
 	ODBC_PARAM(DumpFile) \
@@ -534,6 +536,7 @@ bool get_login_info(HWND hwndParent, TDSLOGIN * login);
 	ODBC_PARAM(ServerSPN) \
 	ODBC_PARAM(TDS_Version) \
 	ODBC_PARAM(TextSize) \
+	ODBC_PARAM(TimeFmt) \
 	ODBC_PARAM(Timeout) \
 	ODBC_PARAM(Trusted_Connection) \
 	ODBC_PARAM(UID) \
@@ -566,11 +569,12 @@ typedef struct {
  * \param connect_string      point to connection string
  * \param connect_string_end  point to end of connection string
  * \param login               structure where to store login information
+ * \param dbc                 descriptor where to store other information
  * \param parsed_params       structure where to store parsed parameters
  * \return true if success, false otherwise
  */
-bool odbc_parse_connect_string(TDS_ERRS *errs, const char *connect_string, const char *connect_string_end,
-			       TDSLOGIN * login, TDS_PARSED_PARAM *parsed_params);
+bool odbc_parse_connect_string(TDS_ERRS * errs, const char *connect_string, const char *connect_string_end,
+			       TDSLOGIN * login, TDS_DBC * dbc, TDS_PARSED_PARAM * parsed_params);
 bool odbc_get_dsn_info(TDS_ERRS *errs, const char *DSN, TDSLOGIN * login);
 #ifdef _WIN32
 int odbc_build_connect_string(TDS_ERRS *errs, TDS_PARSED_PARAM *params, char **out);

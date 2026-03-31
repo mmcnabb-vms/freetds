@@ -13,10 +13,18 @@ static void
 assert_equal_str(TDS_PARSED_PARAM param, const char *b)
 {
 	/* printf("param %.*s b %s\n", (int) param.len, param.p, b); */
-	assert(b && strlen(b) == param.len && strncmp(param.p, b, param.len)==0);
+	if (b && strlen(b) == param.len && strncmp(param.p, b, param.len) == 0)
+		return;
+
+	if (!b)
+		b = "(null)";
+
+	fprintf(stderr, "(%d) \"%s\"\n", (int) strlen(b), b);
+	fprintf(stderr, "(%d) \"%.*s\"\n", (int) param.len, (int) param.len, param.p);
+	assert(!"Strings differ.");
 }
 
-typedef void check_func_t(TDSLOGIN *login, TDS_PARSED_PARAM *parsed_params);
+typedef void check_func_t(TDSLOGIN * login, TDS_PARSED_PARAM * parsed_params);
 
 static void
 test_common(const char *name, const char *connect_string, check_func_t *check_func)
@@ -37,7 +45,7 @@ test_common(const char *name, const char *connect_string, check_func_t *check_fu
 
 	odbc_errs_reset(&errs);
 
-	if (!odbc_parse_connect_string(&errs, connect_string, connect_string_end, login, parsed_params)) {
+	if (!odbc_parse_connect_string(&errs, connect_string, connect_string_end, login, NULL, parsed_params)) {
 		assert(errs.num_errors > 0);
 		if (check_func) {
 			fprintf(stderr, "Error parsing string in test '%s'\n", name);
@@ -60,7 +68,7 @@ test_common(const char *name, const char *connect_string, check_func_t *check_fu
 		static const char connect_string[] = s; \
 		test_common(#name, connect_string, name ## _check); \
 	} \
-	static void name ## _check(TDSLOGIN *login, TDS_PARSED_PARAM *parsed_params)
+	static void name ## _check(TDSLOGIN *login TDS_UNUSED, TDS_PARSED_PARAM *parsed_params)
 
 #define CHECK_ERROR(name, s) \
 	static void name(void) { \
@@ -137,6 +145,14 @@ CHECK(password_bug_report,
 CHECK_ERROR(unfinished,
 	"Driver=FreeTDS;Server=1.2.3.4;Port=1433;pwd={p@ssw0rd")
 
+CHECK(datetime_formats,
+	"Driver=FreeTDS;Server=1.2.3.4;Port=1433;Database=test;uid=test_user;pwd=xxxx;TIMEFMT=%H:%M:%S;DATEFMT=%Y-%m-%d;DATETIMEFMT={==%Y%m%d;%H%M%S==}")
+{
+	assert_equal_str(parsed_params[ODBC_PARAM_DateFmt], "%Y-%m-%d");
+	assert_equal_str(parsed_params[ODBC_PARAM_TimeFmt], "%H:%M:%S");
+	assert_equal_str(parsed_params[ODBC_PARAM_DateTimeFmt], "{==%Y%m%d;%H%M%S==}");
+}
+
 TEST_MAIN()
 {
 	simple_string();
@@ -152,6 +168,8 @@ TEST_MAIN()
 	password_bug_report();
 
 	unfinished();
+
+	datetime_formats();
 
 	return 0;
 }

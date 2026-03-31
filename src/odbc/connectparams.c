@@ -395,8 +395,8 @@ parse_value(TDS_ERRS *errs, const char *p, const char *connect_string_end, DSTR 
  * @return true if success false otherwise
  */
 bool
-odbc_parse_connect_string(TDS_ERRS *errs, const char *connect_string, const char *connect_string_end, TDSLOGIN * login,
-			  TDS_PARSED_PARAM *parsed_params)
+odbc_parse_connect_string(TDS_ERRS *errs, const char *connect_string, const char *connect_string_end, TDSLOGIN *login,
+			  TDS_DBC *dbc, TDS_PARSED_PARAM *parsed_params)
 {
 	const char *p, *end;
 	DSTR *dest_s, value = DSTR_INITIALIZER;
@@ -489,9 +489,15 @@ odbc_parse_connect_string(TDS_ERRS *errs, const char *connect_string, const char
 		} else if (CHK_PARAM(PacketSize)) {
 			tds_parse_conf_section(TDS_STR_BLKSZ, tds_dstr_cstr(&value), login);
 		} else if (CHK_PARAM(ClientCharset)
-			   ||  strcasecmp(option, "client_charset") == 0) {
+			   || strcasecmp(option, "client_charset") == 0) {
 			num_param = ODBC_PARAM_ClientCharset;
 			tds_parse_conf_section(TDS_STR_CLCHARSET, tds_dstr_cstr(&value), login);
+		} else if (CHK_PARAM(DateTimeFmt) && dbc != NULL) {
+			dest_s = &dbc->datetime_fmt;
+		} else if (CHK_PARAM(DateFmt) && dbc != NULL) {
+			dest_s = &dbc->date_fmt;
+		} else if (CHK_PARAM(TimeFmt) && dbc != NULL) {
+			dest_s = &dbc->time_fmt;
 		} else if (CHK_PARAM(DumpFile)) {
 			tds_parse_conf_section(TDS_STR_DUMPFILE, tds_dstr_cstr(&value), login);
 		} else if (CHK_PARAM(DumpFileAppend)) {
