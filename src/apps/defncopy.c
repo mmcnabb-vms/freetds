@@ -995,17 +995,17 @@ get_login(int argc, char *argv[], OPTIONS *options)
 			fdomain = FALSE;
 			break;
 		case 'S':
-			options->servername = strdup(optarg);
+			options->servername = xstrdup(optarg);
 			break;
 		case 'd':
 		case 'D':
-			options->database = strdup(optarg);
+			options->database = xstrdup(optarg);
 			break;
 		case 'i':
-			options->input_filename = strdup(optarg);
+			options->input_filename = xstrdup(optarg);
 			break;
 		case 'o':
-			options->output_filename = strdup(optarg);
+			options->output_filename = xstrdup(optarg);
 			break;
 		case 'v':
 			printf("%s\n\n%s", argv[0],
@@ -1050,21 +1050,21 @@ get_login(int argc, char *argv[], OPTIONS *options)
 	if (strncasecmp(argv[optind], "in", 2) == 0) {
 		optind++;	/* consume direction */
 		if (optind < argc) {
-			options->input_filename = strdup(argv[optind]);
+			options->input_filename = xstrdup(argv[optind]);
 			optind++;	/* consume filename */
 		}
 		direction_found = true;
 	} else if (strncasecmp(argv[optind], "out", 3) == 0) {
 		optind++;	/* consume direction */
 		if (optind < argc) {
-			options->output_filename = strdup(argv[optind]);
+			options->output_filename = xstrdup(argv[optind]);
 			optind++;	/* consume filename */
 		}
 		direction_found = true;
 	}
 
 	if (direction_found && optind < argc) {
-		options->database = strdup(argv[optind]);
+		options->database = xstrdup(argv[optind]);
 		optind++;	/* consume database name */
 	}
 
