@@ -36,7 +36,7 @@ jobs:
         env:
             PREFIX: /freetds
             ICONV_URL: https://codeload.github.com/win-iconv/win-iconv/zip
-            ICONV_VER: 0.0.8
+            ICONV_VER: 0.0.10
 
         steps:
 
